@@ -9,6 +9,8 @@
 </head>
 
 <body>
+  <audio id="flip-sound" src="sound/page-flip.mp3" preload="auto"></audio>
+
   <div class="flipbook" id="flipbook">
     <div class="hard">FlipTest <small>~ Jsierra</small></div>
     <div class="hard"></div>
@@ -24,34 +26,45 @@
   <script src="turn.js"></script>
   
   <script>
-    const flipbook = document.getElementById('flipbook');
+    const flipbook = $("#flipbook");
+    const audio = document.getElementById('flip-sound');
     const totalPages = 132;
-    const endCaps = document.querySelectorAll('.hard');
 
-    // Generate pages 1 to 132
+    // 1. Generate pages 1 to 132
     for (let i = 1; i <= totalPages; i++) {
-      // Pad the number with zeros (e.g., 1 becomes 001)
       let pageNum = i.toString().padStart(3, '0');
       
-      // Create the page structure
-      const pageDiv = document.createElement('div');
-      pageDiv.innerHTML = `
-        <img src="Paginas/1° diagramación_compressed-${pageNum}.png" alt="Page ${i}" />
-        <small> Page ${i} </small>
-      `;
+      const pageHtml = `
+        <div>
+          <img src="images/1° diagramación_compressed-${pageNum}.png" alt="Page ${i}" />
+          <small> Page ${i} </small>
+        </div>`;
 
-      // Insert pages before the last two "hard" cover divs
-      flipbook.insertBefore(pageDiv, endCaps[2]);
+      // Insert before the last two "hard" covers
+      $(pageHtml).insertBefore(flipbook.find(".hard").eq(2));
     }
 
-    // Initialize Turn.js after the pages are added
-    $(document).ready(function() {
-      $(".flipbook").turn({
-        width: 800,
-        height: 600,
-        autoCenter: true
-      });
+    // 2. Initialize Turn.js with Sound Logic
+    flipbook.turn({
+      width: 800,
+      height: 600,
+      autoCenter: true,
+      when: {
+        turning: function(event, page, view) {
+          // Play sound when the page starts to turn
+          playFlipSound();
+        }
+      }
     });
+
+    function playFlipSound() {
+      // Reset sound to start (in case user flips fast)
+      audio.currentTime = 0;
+      audio.play().catch(function(error) {
+        // Browsers block auto-playing audio until the user clicks something.
+        console.log("Audio playback waited for user interaction.");
+      });
+    }
   </script>
 </body>
 
