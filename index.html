@@ -25,47 +25,46 @@
   <script src="jquery.js"></script>
   <script src="turn.js"></script>
   
-  <script>
-    const flipbook = $("#flipbook");
-    const audio = document.getElementById('flip-sound');
-    const totalPages = 132;
+ <script>
+  const flipbook = $("#flipbook");
+  const audio = document.getElementById('flip-sound');
+  const totalPages = 132;
 
-    // 1. Generate pages 1 to 132
-    for (let i = 1; i <= totalPages; i++) {
-      let pageNum = i.toString().padStart(3, '0');
-      
-      const pageHtml = `
-        <div>
-          <img src="images/1° diagramación_compressed-${pageNum}.png" alt="Page ${i}" />
-          <small> Page ${i} </small>
-        </div>`;
+  // 1. Generate pages 1 to 132
+  for (let i = 1; i <= totalPages; i++) {
+    let pageNum = i.toString().padStart(3, '0');
+    
+    // This is the specific string you asked for
+    let rawPath = `Paginas/1° diagramación_compressed-${pageNum}.png`;
+    
+    // encodeURI handles the spaces, the ° symbol, and the ó accent safely
+    let safePath = encodeURI(rawPath);
 
-      // Insert before the last two "hard" covers
-      $(pageHtml).insertBefore(flipbook.find(".hard").eq(2));
-    }
+    const pageHtml = `
+      <div>
+        <img src="${safePath}" alt="Page ${i}" />
+        <small> Page ${i} </small>
+      </div>`;
 
-    // 2. Initialize Turn.js with Sound Logic
-    flipbook.turn({
-      width: 800,
-      height: 600,
-      autoCenter: true,
-      when: {
-        turning: function(event, page, view) {
-          // Play sound when the page starts to turn
-          playFlipSound();
+    // Insert before the last two "hard" covers
+    $(pageHtml).insertBefore(flipbook.find(".hard").eq(2));
+  }
+
+  // 2. Initialize Turn.js
+  flipbook.turn({
+    width: 800,
+    height: 600,
+    autoCenter: true,
+    when: {
+      turning: function(event, page, view) {
+        if (audio) {
+          audio.currentTime = 0;
+          audio.play().catch(e => console.log("Audio play blocked until user interaction"));
         }
       }
-    });
-
-    function playFlipSound() {
-      // Reset sound to start (in case user flips fast)
-      audio.currentTime = 0;
-      audio.play().catch(function(error) {
-        // Browsers block auto-playing audio until the user clicks something.
-        console.log("Audio playback waited for user interaction.");
-      });
     }
-  </script>
+  });
+</script>
 </body>
 
 </html>
