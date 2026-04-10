@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Flipbook Test</title>
+</head>
+
+<body>
+  <div class="flipbook" id="flipbook">
+    <div class="hard">FlipTest <small>~ Jsierra</small></div>
+    <div class="hard"></div>
+    <div>
+      <small>Test para el Libro</small>
+    </div>
+
+    <div class="hard"></div>
+    <div class="hard">Test End <small>~ Jsierra</small></div>
+  </div>
+
+  <script src="jquery.js"></script>
+  <script src="turn.js"></script>
+  
+  <script>
+    const flipbook = document.getElementById('flipbook');
+    const totalPages = 132;
+    const endCaps = document.querySelectorAll('.hard');
+
+    // Generate pages 1 to 132
+    for (let i = 1; i <= totalPages; i++) {
+      // Pad the number with zeros (e.g., 1 becomes 001)
+      let pageNum = i.toString().padStart(3, '0');
+      
+      // Create the page structure
+      const pageDiv = document.createElement('div');
+      pageDiv.innerHTML = `
+        <img src="Paginas/1° diagramación_compressed-${pageNum}.png" alt="Page ${i}" />
+        <small> Page ${i} </small>
+      `;
+
+      // Insert pages before the last two "hard" cover divs
+      flipbook.insertBefore(pageDiv, endCaps[2]);
+    }
+
+    // Initialize Turn.js after the pages are added
+    $(document).ready(function() {
+      $(".flipbook").turn({
+        width: 800,
+        height: 600,
+        autoCenter: true
+      });
+    });
+  </script>
+</body>
+
+</html>
